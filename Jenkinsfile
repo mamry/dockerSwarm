@@ -1,11 +1,11 @@
 node('linux') {
 
     stage('Create') {
-    git credentialsId: 'Github-Token', url: 'https://github.com/mamry/final_hit.git' 
+    git credentialsId: 'Github-Token', url: 'https://github.com/mamry/final-2.git' 
     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS-Password', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
     // some block
                 
-        sh 'aws cloudformation create-stack --stack-name final-production --region us-east-1 --template-body file://docker-swarm.json --capabilities CAPABILITY_IAM --parameters ParameterKey=KeyName,ParameterValue=midKey ParameterKey=YourIp,ParameterValue=$(curl ifconfig.me)/32'
+   sh 'aws cloudformation create-stack --stack-name final-production --region us-east-1 --template-body file://docker-swarm.json --capabilities CAPABILITY_IAM --parameters ParameterKey=KeyName,ParameterValue=midKey ParameterKey=YourIp,ParameterValue=$(curl ifconfig.me)/32'
    sh 'aws cloudformation wait stack-create-complete --stack-name final-production --region us-east-1'
     sh 'aws ec2 describe-instances --region us-east-1'
    env.myip = sh returnStdout: true, script: 'aws ec2 describe-instances --region us-east-1 --instance-ids --filters "Name=tag:Name,Values=swarm initiator" --query "Reservations[*].Instances[*].PublicIpAddress" --output text'
